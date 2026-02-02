@@ -1,0 +1,130 @@
+================================================================================
+COMPREHENSIVE PREPROCESSING ANALYSIS REPORT
+================================================================================
+
+
+STEP 1: Parse Dates
+--------------------------------------------------------------------------------
+Shape: (10000, 17) → (10000, 17)
+Columns Added: 0
+Columns Removed: 0
+
+
+STEP 2: Select Columns
+--------------------------------------------------------------------------------
+Shape: (10000, 17) → (10000, 17)
+Columns Added: 0
+Columns Removed: 0
+
+
+STEP 3: Sort by Entity and Date
+--------------------------------------------------------------------------------
+Shape: (10000, 17) → (10000, 17)
+Columns Added: 0
+Columns Removed: 0
+
+
+STEP 4: Impute Missing Values
+--------------------------------------------------------------------------------
+Shape: (10000, 17) → (10000, 17)
+Columns Added: 0
+Columns Removed: 0
+
+
+STEP 5: Add Temporal Features
+--------------------------------------------------------------------------------
+Shape: (10000, 17) → (10000, 30)
+Columns Added: 13
+Columns Removed: 0
+
+New Columns:
+  • week_sin
+  • week_cos
+  • month_cos
+  • week
+  • month
+  • month_sin
+  • week_of_year
+  • year
+  • quarter
+  • day_of_week_cos
+  ... and 3 more
+
+
+STEP 6: Add Lag Features
+--------------------------------------------------------------------------------
+Shape: (10000, 30) → (10000, 34)
+Columns Added: 4
+Columns Removed: 0
+
+New Columns:
+  • sale_amount_lag_2
+  • sale_amount_lag_1
+  • sale_amount_lag_4
+  • sale_amount_lag_7
+
+
+STEP 7: Add Rolling Features
+--------------------------------------------------------------------------------
+Shape: (10000, 34) → (10000, 46)
+Columns Added: 12
+Columns Removed: 0
+
+New Columns:
+  • sale_amount_rolling_std_7
+  • sale_amount_rolling_min_7
+  • sale_amount_rolling_mean_4
+  • sale_amount_rolling_mean_14
+  • sale_amount_rolling_max_7
+  • sale_amount_rolling_max_14
+  • sale_amount_rolling_std_14
+  • sale_amount_rolling_std_4
+  • sale_amount_rolling_min_4
+  • sale_amount_rolling_mean_7
+  ... and 2 more
+
+
+STEP 8: Add External Features
+--------------------------------------------------------------------------------
+Shape: (10000, 46) → (10000, 62)
+Columns Added: 16
+Columns Removed: 0
+
+New Columns:
+  • precpt_lag_4
+  • avg_wind_level_lag_4
+  • stock_hour6_22_cnt_lag_4
+  • avg_humidity_lag_4
+  • activity_flag_lag_4
+  • activity_flag_lag_1
+  • avg_temperature_lag_4
+  • holiday_flag_lag_1
+  • stock_hour6_22_cnt_lag_1
+  • precpt_lag_1
+  ... and 6 more
+
+
+STEP 9: Encode Categoricals
+--------------------------------------------------------------------------------
+Shape: (10000, 62) → (10000, 62)
+Columns Added: 0
+Columns Removed: 0
+
+
+STEP 10: Cap Outliers
+--------------------------------------------------------------------------------
+Shape: (10000, 62) → (10000, 62)
+Columns Added: 0
+Columns Removed: 0
+
+
+STEP 11: Scale Numerical
+--------------------------------------------------------------------------------
+Shape: (10000, 62) → (10000, 62)
+Columns Added: 0
+Columns Removed: 0
+
+
+================================================================================
+END OF REPORT
+================================================================================

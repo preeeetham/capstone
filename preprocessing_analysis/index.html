@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preprocessing Analysis: 11-Step Pipeline</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            overflow-x: auto;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s;
+            white-space: nowrap;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .nav-tab:hover {
+            background: #e9ecef;
+            color: #495057;
+        }
+        
+        .nav-tab.active {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            background: white;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .step-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s;
+        }
+        
+        .step-card:hover {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transform: translateY(-5px);
+        }
+        
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .step-number {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+        
+        .step-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .step-description {
+            color: #6c757d;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+        
+        .step-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-box {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .image-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .image-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .summary-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+        
+        .summary-card h3 {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .summary-card p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .warning-box {
+            background: #fff4e5;
+            border-left: 4px solid #ff9800;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .success-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .feature-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .feature-item {
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin: 10px 5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔄 Preprocessing Analysis</h1>
+            <p>11-Step Pipeline Visualization for FreshRetailNet-50K</p>
+        </header>
+        
+        <nav class="nav-tabs">
+            <button class="nav-tab active" onclick="openTab(event, 'overview')">📊 Overview</button>
+            <button class="nav-tab" onclick="openTab(event, 'step1')">1️⃣ Parse Dates</button>
+            <button class="nav-tab" onclick="openTab(event, 'step2')">2️⃣ Select Columns</button>
+            <button class="nav-tab" onclick="openTab(event, 'step3')">3️⃣ Sort Data</button>
+            <button class="nav-tab" onclick="openTab(event, 'step4')">4️⃣ Impute Missing</button>
+            <button class="nav-tab" onclick="openTab(event, 'step5')">5️⃣ Temporal Features</button>
+            <button class="nav-tab" onclick="openTab(event, 'step6')">6️⃣ Lag Features</button>
+            <button class="nav-tab" onclick="openTab(event, 'step7')">7️⃣ Rolling Features</button>
+            <button class="nav-tab" onclick="openTab(event, 'step8')">8️⃣ External Features</button>
+            <button class="nav-tab" onclick="openTab(event, 'step9')">9️⃣ Encode Categoricals</button>
+            <button class="nav-tab" onclick="openTab(event, 'step10')">🔟 Cap Outliers</button>
+            <button class="nav-tab" onclick="openTab(event, 'step11')">1️⃣1️⃣ Scale Numerical</button>
+        </nav>
+        
+        <div class="content">
+            <!-- Overview Tab -->
+            <div id="overview" class="tab-content active">
+                <h2 style="color: #2c3e50; margin-bottom: 30px;">Pipeline Overview</h2>
+                
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <h3>11</h3>
+                        <p>Preprocessing Steps</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>17→62</h3>
+                        <p>Features (Columns)</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>+45</h3>
+                        <p>Engineered Features</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>0%</h3>
+                        <p>Data Leakage</p>
+                    </div>
+                </div>
+                
+                <div class="success-box">
+                    <h3>✅ Key Achievements</h3>
+                    <ul>
+                        <li><strong>No Data Leakage:</strong> All fit operations use training data only</li>
+                        <li><strong>Rich Feature Set:</strong> From 17 raw features to 62 engineered features</li>
+                        <li><strong>Temporal Integrity:</strong> Lag/rolling features use past values only</li>
+                        <li><strong>Production Ready:</strong> Scalable and reproducible pipeline</li>
+                    </ul>
+                </div>
+                
+                <h3 style="margin-top: 40px; color: #2c3e50;">Complete Summary Visualization</h3>
+                <div class="image-container">
+                    <img src="00_complete_summary.png" alt="Complete Summary">
+                </div>
+                
+                <h3 style="margin-top: 40px; color: #2c3e50;">Data Transformation Summary</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Step</th>
+                            <th>Name</th>
+                            <th>Shape</th>
+                            <th>Columns Added</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Parse Dates</td>
+                            <td>(10000, 17) → (10000, 17)</td>
+                            <td>0</td>
+                            <td>Enable temporal operations</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Select Columns</td>
+                            <td>(10000, 17) → (10000, 17)</td>
+                            <td>0</td>
+                            <td>Focus on relevant features</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Sort Data</td>
+                            <td>(10000, 17) → (10000, 17)</td>
+                            <td>0</td>
+                            <td>Chronological ordering</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Impute Missing</td>
+                            <td>(10000, 17) → (10000, 17)</td>
+                            <td>0</td>
+                            <td>Handle missing values</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Temporal Features</td>
+                            <td>(10000, 17) → (10000, 30)</td>
+                            <td><strong>+13</strong></td>
+                            <td>Extract time patterns</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Lag Features</td>
+                            <td>(10000, 30) → (10000, 34)</td>
+                            <td><strong>+4</strong></td>
+                            <td>Autoregressive patterns</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>Rolling Features</td>
+                            <td>(10000, 34) → (10000, 46)</td>
+                            <td><strong>+12</strong></td>
+                            <td>Smooth trends</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>External Features</td>
+                            <td>(10000, 46) → (10000, 62)</td>
+                            <td><strong>+16</strong></td>
+                            <td>External covariates</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>Encode Categoricals</td>
+                            <td>(10000, 62) → (10000, 62)</td>
+                            <td>0</td>
+                            <td>Convert to numeric</td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>Cap Outliers</td>
+                            <td>(10000, 62) → (10000, 62)</td>
+                            <td>0</td>
+                            <td>Handle extremes</td>
+                        </tr>
+                        <tr>
+                            <td>11</td>
+                            <td>Scale Numerical</td>
+                            <td>(10000, 62) → (10000, 62)</td>
+                            <td>0</td>
+                            <td>Standardize scales</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Step 1 -->
+            <div id="step1" class="tab-content">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <div class="step-title">Parse Dates</div>
+                    </div>
+                    <div class="step-description">
+                        Converts date column from string format to datetime64 objects, enabling temporal operations and proper date handling.
+                    </div>
+                    <div class="step-stats">
+                        <div class="stat-box">
+                            <div class="stat-label">Columns Added</div>
+                            <div class="stat-value">0</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Leakage Risk</div>
+                            <div class="stat-value" style="color: #28a745;">None</div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="badge badge-info">Data Preparation</span>
+                        <span class="badge badge-success">No Leakage</span>
+                    </div>
+                    <div class="info-box">
+                        <strong>Why Important:</strong> Datetime objects enable date arithmetic, extraction of temporal features, and proper sorting. String dates would fail in temporal operations.
+                    </div>
+                    <div class="image-container">
+                        <img src="step_01_parse_dates.png" alt="Step 1: Parse Dates">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 2 -->
+            <div id="step2" class="tab-content">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <div class="step-title">Select Columns</div>
+                    </div>
+                    <div class="step-description">
+                        Filters dataset to keep only relevant columns, removing sequence data and unnecessary features for tabular forecasting.
+                    </div>
+                    <div class="step-stats">
+                        <div class="stat-box">
+                            <div class="stat-label">Columns Added</div>
+                            <div class="stat-value">0</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Leakage Risk</div>
+                            <div class="stat-value" style="color: #28a745;">None</div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="badge badge-info">Data Preparation</span>
+                        <span class="badge badge-success">No Leakage</span>
+                    </div>
+                    <div class="info-box">
+                        <strong>Why Important:</strong> Reduces memory usage and computational cost by removing columns like hourly sequences that aren't suitable for tabular models.
+                    </div>
+                    <div class="image-container">
+                        <img src="step_02_select_columns.png" alt="Step 2: Select Columns">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 3 -->
+            <div id="step3" class="tab-content">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">3</div>
+                        <div class="step-title">Sort by Entity and Date</div>
+                    </div>
+                    <div class="step-description">
+                        Sorts data by entity identifiers (store_id, product_id) and date in chronological order, essential for correct lag/rolling calculations.
+                    </div>
+                    <div class="step-stats">
+                        <div class="stat-box">
+                            <div class="stat-label">Columns Added</div>
+                            <div class="stat-value">0</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Leakage Risk</div>
+                            <div class="stat-value" style="color: #28a745;">None</div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="badge badge-info">Data Preparation</span>
+                        <span class="badge badge-danger">Critical for Temporal Features</span>
+                        <span class="badge badge-success">No Leakage</span>
+                    </div>
+                    <div class="warning-box">
+                        <strong>⚠️ Critical Step:</strong> Without proper sorting, lag features would use random past values instead of chronological ones, breaking temporal logic and introducing errors.
+                    </div>
+                    <div class="image-container">
+                        <img src="step_03_sort_by_entity_and_date.png" alt="Step 3: Sort by Entity and Date">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 4 -->
+            <div id="step4" class="tab-content">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">4</div>
+                        <div class="step-title">Impute Missing Values</div>
+                    </div>
+                    <div class="step-description">
+                        Fills missing values using statistics computed from training data only. Uses median for numeric features and mode for categorical features.
+                    </div>
+                    <div class="step-stats">
+                        <div class="stat-box">
+                            <div class="stat-label">Columns Added</div>
+                            <div class="stat-value">0</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Leakage Risk</div>
+                            <div class="stat-value" style="color: #ffc107;">Prevented</div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="badge badge-warning">Fit on Train Only</span>
+                        <span class="badge badge-success">Leakage Prevented</span>
+                    </div>
+                    <div class="warning-box">
+                        <strong>🔒 Leakage Prevention:</strong> Imputation values (median/mode) are computed from training data only, then applied to both train and validation. This prevents validation statistics from influencing the model.
+                    </div>
+                    <div class="image-container">
+                        <img src="step_04_impute_missing_values.png" alt="Step 4: Impute Missing Values">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 5 -->
+            <div id="step5" class="tab-content">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">5</div>
+                        <div class="step-title">Add Temporal Features</div>
+                    </div>
+                    <div class="step-description">
+                        Extracts time-based features from the date column: year, month, week, day of week, quarter, and cyclical encodings (sin/cos).
+                    </div>
+                    <div class="step-stats">
+                        <div class="stat-box">
+                            <div class="stat-label">Columns Added</div>
+                            <div class="stat-value">+13</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Leakage Risk</div>
+                            <div class="stat-value" style="color: #28a745;">None</div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="badge badge-info">Feature Engineering</span>
+                        <span class="badge badge-success">No Leakage</span>
+                    </div>
+                    <div class="feature-list">
+                        <div class="feature-item">year</div>
+                        <div class="feature-item">month</div>
+                        <div class="feature-item">week</div>
+                        <div class="feature-item">quarter</div>
+                        <div class="feature-item">day_of_week</div>
+                        <div class="feature-item">month_sin/cos</div>
+                        <div class="feature-item">week_sin/cos</div>
+                        <div class="feature-item">+ more</div>
+                    </div>
+                    <div class="info-box">
+                        <strong>Why Important:</strong> Captures seasonality (monthly/quarterly patterns), weekly cycles, and long-term trends. Sin/cos encodings handle cyclical nature of time (Dec→Jan transition).
+                    </div>
+                    <div class="image-container">
+                        <img src="step_05_add_temporal_features.png" alt="Step 5: Add Temporal Features">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 6 -->
+            <div id="step6" class="tab-content">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">6</div>
+                        <div class="step-title">Add Lag Features</div>
+                    </div>
+                    <div class="step-description">
+                        Creates features from past values of the target variable. Uses lags of 1, 2, 4, and 7 days to capture recent trends and weekly patterns.
+                    </div>
+                    <div class="step-stats">
+                        <div class="stat-box">
+                            <div class="stat-label">Columns Added</div>
+                            <div class="stat-value">+4</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Leakage Risk</div>
+                            <div class="stat-value" style="color: #28a745;">None</div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="badge badge-info">Feature Engineering</span>
+                        <span class="badge badge-success">Past Values Only</span>
+                    </div>
+                    <div class="feature-list">
+                        <div class="feature-item">sale_amount_lag_1 (yesterday)</div>
+                        <div class="feature-item">sale_amount_lag_2 (2 days ago)</div>
+                        <div class="feature-item">sale_amount_lag_4 (4 days ago)</div>
+                        <div class="feature-item">sale_amount_lag_7 (last week)</div>
+                    </div>
+                    <div class="success-box">
+                        <strong>✅ Autoregressive Pattern:</strong> Past sales are often the strongest predictor of future sales. Lag features capture this temporal dependency while ensuring only past data is used (via .shift()).
+                    </div>
+                    <div class="image-container">
+                        <img src="step_06_add_lag_features.png" alt="Step 6: Add Lag Features">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 7 -->
+            <div id="step7" class="tab-content">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">7</div>
+                        <div class="step-title">Add Rolling Features</div>
+                    </div>
+                    <div class="step-description">
+                        Computes rolling window statistics (mean, std, min, max) over past 4, 7, and 14 days to capture smoothed trends and volatility.
+                    </div>
+                    <div class="step-stats">
+                        <div class="stat-box">
+                            <div class="stat-label">Columns Added</div>
+                            <div class="stat-value">+12</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Leakage Risk</div>
+                            <div class="stat-value" style="color: #28a745;">None</div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="badge badge-info">Feature Engineering</span>
+                        <span class="badge badge-success">Past Values Only</span>
+                    </div>
+                    <div class="info-box">
+                        <strong>Rolling Statistics:</strong>
+                        <ul>
+                            <li><strong>Mean:</strong> Average trend over window</li>
+                            <li><strong>Std:</strong> Volatility/stability measure</li>
+                            <li><strong>Min/Max:</strong> Recent extremes</li>
+                        </ul>
+                        Windows: 4 days (short-term), 7 days (weekly), 14 days (bi-weekly)
+                    </div>
+                    <div class="image-container">
+                        <img src="step_07_add_rolling_features.png" alt="Step 7: Add Rolling Features">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 8 -->
+            <div id="step8" class="tab-content">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">8</div>
+                        <div class="step-title">Add External Features</div>
+                    </div>
+                    <div class="step-description">
+                        Incorporates external covariates (weather, promotions, holidays, stock) and creates lagged versions to capture delayed effects.
+                    </div>
+                    <div class="step-stats">
+                        <div class="stat-box">
+                            <div class="stat-label">Columns Added</div>
+                            <div class="stat-value">+16</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Leakage Risk</div>
+                            <div class="stat-value" style="color: #28a745;">None</div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="badge badge-info">Feature Engineering</span>
+                        <span class="badge badge-success">Past Values Only</span>
+                    </div>
+                    <div class="info-box">
+                        <strong>External Features:</strong>
+                        <ul>
+                            <li><strong>Promotions:</strong> discount, holiday_flag, activity_flag</li>
+                            <li><strong>Weather:</strong> temperature, humidity, wind, precipitation</li>
+                            <li><strong>Stock:</strong> stock_hour6_22_cnt</li>
+                        </ul>
+                        Each feature gets lags [1, 2, 4] to capture delayed effects (e.g., yesterday's rain affects today's sales).
+                    </div>
+                    <div class="image-container">
+                        <img src="step_08_add_external_features.png" alt="Step 8: Add External Features">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 9 -->
+            <div id="step9" class="tab-content">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">9</div>
+                        <div class="step-title">Encode Categoricals</div>
+                    </div>
+                    <div class="step-description">
+                        Converts categorical variables (store_id, product_id, category_ids) to numeric codes using label encoding fit on training data.
+                    </div>
+                    <div class="step-stats">
+                        <div class="stat-box">
+                            <div class="stat-label">Columns Added</div>
+                            <div class="stat-value">0</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Leakage Risk</div>
+                            <div class="stat-value" style="color: #ffc107;">Prevented</div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="badge badge-warning">Fit on Train Only</span>
+                        <span class="badge badge-success">Leakage Prevented</span>
+                    </div>
+                    <div class="warning-box">
+                        <strong>🔒 Leakage Prevention:</strong> Encoding mappings (e.g., Store_A→0, Store_B→1) are learned from training data only. Unknown categories in validation get mapped to -1.
+                    </div>
+                    <div class="image-container">
+                        <img src="step_09_encode_categoricals.png" alt="Step 9: Encode Categoricals">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 10 -->
+            <div id="step10" class="tab-content">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">10</div>
+                        <div class="step-title">Cap Outliers</div>
+                    </div>
+                    <div class="step-description">
+                        Winsorizes extreme values by capping at 1st and 99th percentiles computed from training data, reducing impact of outliers.
+                    </div>
+                    <div class="step-stats">
+                        <div class="stat-box">
+                            <div class="stat-label">Columns Added</div>
+                            <div class="stat-value">0</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Leakage Risk</div>
+                            <div class="stat-value" style="color: #ffc107;">Prevented</div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="badge badge-warning">Fit on Train Only</span>
+                        <span class="badge badge-success">Leakage Prevented</span>
+                    </div>
+                    <div class="info-box">
+                        <strong>Why Winsorize:</strong> Instead of removing outliers (losing data), we cap extreme values to train percentiles. This preserves all rows while reducing outlier impact on model training.
+                    </div>
+                    <div class="image-container">
+                        <img src="step_10_cap_outliers.png" alt="Step 10: Cap Outliers">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 11 -->
+            <div id="step11" class="tab-content">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">11</div>
+                        <div class="step-title">Scale Numerical</div>
+                    </div>
+                    <div class="step-description">
+                        Standardizes numerical features to mean=0 and std=1 using training data statistics, ensuring all features have equal scale.
+                    </div>
+                    <div class="step-stats">
+                        <div class="stat-box">
+                            <div class="stat-label">Columns Added</div>
+                            <div class="stat-value">0</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Leakage Risk</div>
+                            <div class="stat-value" style="color: #ffc107;">Prevented</div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="badge badge-warning">Fit on Train Only</span>
+                        <span class="badge badge-success">Leakage Prevented</span>
+                    </div>
+                    <div class="info-box">
+                        <strong>Why Scale:</strong> Features on different scales (sales: 0-500, temperature: -10 to 40) can dominate models unfairly. Standardization (z-score) puts all features on equal footing, improving convergence and interpretability.
+                    </div>
+                    <div class="image-container">
+                        <img src="step_11_scale_numerical.png" alt="Step 11: Scale Numerical">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <h3>📚 Additional Resources</h3>
+            <p style="margin: 20px 0;">
+                <a href="../PREPROCESSING_DETAILED_GUIDE.md" class="btn">Detailed Guide</a>
+                <a href="../docs/PREPROCESSING_11_STEPS.md" class="btn">Quick Reference</a>
+                <a href="../src/preprocessing.py" class="btn">Source Code</a>
+            </p>
+            <p style="opacity: 0.8;">Generated: February 2, 2025 | Dataset: FreshRetailNet-50K (10,000 sample rows)</p>
+        </footer>
+    </div>
+    
+    <script>
+        function openTab(evt, tabName) {
+            // Hide all tab contents
+            var tabContents = document.getElementsByClassName("tab-content");
+            for (var i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove("active");
+            }
+            
+            // Remove active class from all tabs
+            var tabs = document.getElementsByClassName("nav-tab");
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove("active");
+            }
+            
+            // Show the current tab and add active class
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
