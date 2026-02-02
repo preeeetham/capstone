@@ -4,7 +4,27 @@ A comprehensive sales forecasting system implementing research paper methodologi
 
 ## Overview
 
-This project implements a complete sales forecasting pipeline using the Walmart Store Sales Forecasting dataset from Kaggle. It compares baseline models against advanced research-style models including statistical, machine learning, and deep learning approaches.
+This project implements a complete sales forecasting pipeline using retail sales datasets (Walmart from Kaggle and FreshRetailNet-50K from Hugging Face). It compares baseline models against advanced research-style models including statistical, machine learning, and deep learning approaches.
+
+## 🆕 Preprocessing Analysis
+
+**Comprehensive visual analysis of all 11 preprocessing steps is now available!**
+
+- 📊 [**View Interactive Report**](preprocessing_analysis/index.html) - Open in browser for tabbed interface
+- 📖 [**Read Detailed Guide**](PREPROCESSING_DETAILED_GUIDE.md) - 969 lines of in-depth explanations
+- 🖼️ [**Browse Visualizations**](preprocessing_analysis/) - 12 detailed charts showing transformations
+- 📝 [**Quick Summary**](PREPROCESSING_ANALYSIS_SUMMARY.md) - Overview of what's included
+
+**What you'll find:**
+- Before/after comparisons for each step
+- Statistical analysis and data transformations
+- Feature engineering breakdown (17 → 62 features)
+- Data leakage prevention techniques
+- Real-world interpretations and impacts
+
+**View the complete pipeline summary:**
+
+![Preprocessing Pipeline Overview](preprocessing_analysis/00_complete_summary.png)
 
 ## Project Structure
 
@@ -31,8 +51,12 @@ capstone/
 ## Features
 
 ### Data Processing
-- **11-step preprocessing** (no data leakage): parse dates, select columns, sort, impute (fit on train), temporal/lag/rolling/external features, encode categoricals (fit on train), cap outliers (fit on train), scale numericals (fit on train). See `docs/PREPROCESSING_11_STEPS.md`.
-- Automatic dataset download from Kaggle
+- **11-step preprocessing** (no data leakage): parse dates, select columns, sort, impute (fit on train), temporal/lag/rolling/external features, encode categoricals (fit on train), cap outliers (fit on train), scale numericals (fit on train). 
+  - 📊 **NEW:** [Complete Visual Analysis](preprocessing_analysis/) with 12 detailed visualizations
+  - 📖 **NEW:** [Comprehensive Guide](PREPROCESSING_DETAILED_GUIDE.md) with before/after examples
+  - 🌐 **NEW:** [Interactive HTML Report](preprocessing_analysis/index.html) for easy exploration
+  - 📋 See also: [Quick Reference](docs/PREPROCESSING_11_STEPS.md)
+- Automatic dataset download from Kaggle/Hugging Face
 - Date parsing and sorting
 - Comprehensive EDA with missing value analysis and outlier detection
 
