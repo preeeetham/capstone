@@ -1,0 +1,16 @@
+# Environments
+.venv/
+__pycache__/
+
+# Large Data files
+*.csv
+datasets/
+archive/
+
+# ML Models
+models/
+*.pkl
+*.keras
+
+# MacOS
+.DS_Store

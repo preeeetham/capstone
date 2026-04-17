@@ -1,0 +1,20 @@
+data:
+  files:
+    - path: "datasets/test_dataset/train.csv"
+    - path: "datasets/test_dataset/transactions.csv"
+  merge_on: ["date", "store_nbr"]
+  target_col: "sales"
+  date_col: "date"
+  
+preprocessing:
+  numeric_imputation: "median"
+  categorical_imputation: "unknown"
+  outlier_method: "zscore"
+  outlier_threshold: 2.5
+  drop_negative_target: true
+  
+modeling:
+  test_size: 0.20
+  random_state: 42
+  models: ["linear", "random_forest", "xgboost"]
+  feature_selection: true

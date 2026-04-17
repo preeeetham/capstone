@@ -1,0 +1,7 @@
+{
+  "seed": 42,
+  "root": "/Users/rajkumar/Documents/CAPSTONE/Walmart-Sales-Time-Series-Forecasting-Using-Machine-Learning",
+  "plots_dir": "/Users/rajkumar/Documents/CAPSTONE/Walmart-Sales-Time-Series-Forecasting-Using-Machine-Learning/plots",
+  "predictions_dir": "/Users/rajkumar/Documents/CAPSTONE/Walmart-Sales-Time-Series-Forecasting-Using-Machine-Learning/predictions",
+  "artifacts_dir": "/Users/rajkumar/Documents/CAPSTONE/Walmart-Sales-Time-Series-Forecasting-Using-Machine-Learning/artifacts"
+}
